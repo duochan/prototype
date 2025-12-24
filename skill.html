@@ -492,14 +492,11 @@
                                 支持配置复杂的计价公式，Agent 可自动提取买家需求参数并输出精准报价。
                             </p>
                         </div>
-                        <!-- Buttons only visible on hover -->
-                        <div class="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute bottom-6 left-6 right-6 flex gap-3">
+                        <!-- Button only visible on hover -->
+                        <div class="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute bottom-6 left-6 right-6">
                             <!-- onclick triggers the drawer -->
-                            <button onclick="openQuoteDrawer()" class="flex-1 bg-primary hover:bg-primary-hover text-white text-sm font-medium py-1.5 rounded shadow-sm transition-colors text-center whitespace-nowrap">
-                                新建空白
-                            </button>
-                            <button class="flex-1 bg-white dark:bg-surface-dark border border-primary text-primary hover:bg-blue-50 dark:hover:bg-blue-900/30 text-sm font-medium py-1.5 rounded shadow-sm transition-colors text-center whitespace-nowrap">
-                                使用模版
+                            <button onclick="openQuoteDrawer()" class="bg-primary hover:bg-primary-hover text-white text-sm font-medium py-1.5 px-6 rounded shadow-sm transition-colors w-fit mx-auto block whitespace-nowrap">
+                                新建
                             </button>
                         </div>
                     </div>
@@ -659,7 +656,7 @@
                     </button>
                 </section>
 
-                <!-- Pricing Table / Data Source -->
+                <!-- Pricing Table / Data Source (UPDATED TO MULTI-SELECT) -->
                 <section>
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-2">
@@ -667,15 +664,41 @@
                             <h3 class="text-sm font-bold text-text-primary-light dark:text-text-primary-dark">价格表/基础数据</h3>
                         </div>
                     </div>
-                    <!-- Select Dropdown Replacement -->
-                    <label class="block text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark mb-2">选择表格</label>
-                    <div class="relative">
-                        <select class="w-full h-10 px-3 bg-white dark:bg-gray-800 border border-border-light dark:border-border-dark rounded focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm text-text-primary-light dark:text-text-primary-dark appearance-none pr-8">
-                            <option value="">请选择数据源表格...</option>
-                            <option value="1">2025春季面料价格表</option>
-                            <option value="2">通用辅料价格表</option>
-                        </select>
-                        <span class="material-icons-outlined absolute right-2 top-2.5 text-base text-text-secondary-light dark:text-text-secondary-dark pointer-events-none">expand_more</span>
+                    <!-- Custom Multi-Select Component -->
+                    <label class="block text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark mb-2">选择表格（可多选）</label>
+                    <div class="relative group" id="customMultiSelect">
+                        <!-- Trigger / Display Area -->
+                        <div onclick="toggleMultiSelect()" class="w-full min-h-[40px] px-3 py-1.5 bg-white dark:bg-gray-800 border border-border-light dark:border-border-dark rounded text-sm cursor-pointer flex flex-wrap items-center gap-2 hover:border-primary transition-colors relative">
+                            <span id="multiSelectPlaceholder" class="text-gray-400">请选择数据源表格...</span>
+                            <!-- Selected Tags Container -->
+                            <div id="selectedTags" class="flex flex-wrap gap-2"></div>
+                            
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 material-icons-outlined text-gray-400 pointer-events-none">expand_more</span>
+                        </div>
+                
+                        <!-- Dropdown Options -->
+                        <div id="multiSelectOptions" class="hidden absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-border-light dark:border-border-dark rounded shadow-lg z-50 max-h-60 overflow-y-auto">
+                            <!-- Option 1 -->
+                            <div onclick="toggleOption(this, '1', '2025春季面料价格表')" class="px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-between group/option select-none">
+                                <span class="text-text-primary-light dark:text-text-primary-dark">2025春季面料价格表</span>
+                                <span class="material-icons-outlined text-primary opacity-0 check-icon">check</span>
+                            </div>
+                            <!-- Option 2 -->
+                            <div onclick="toggleOption(this, '2', '通用辅料价格表')" class="px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-between group/option select-none">
+                                <span class="text-text-primary-light dark:text-text-primary-dark">通用辅料价格表</span>
+                                <span class="material-icons-outlined text-primary opacity-0 check-icon">check</span>
+                            </div>
+                            <!-- Option 3 -->
+                            <div onclick="toggleOption(this, '3', '2024冬季尾货清单')" class="px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-between group/option select-none">
+                                <span class="text-text-primary-light dark:text-text-primary-dark">2024冬季尾货清单</span>
+                                <span class="material-icons-outlined text-primary opacity-0 check-icon">check</span>
+                            </div>
+                             <!-- Option 4 -->
+                             <div onclick="toggleOption(this, '4', 'VIP客户折扣表')" class="px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-between group/option select-none">
+                                <span class="text-text-primary-light dark:text-text-primary-dark">VIP客户折扣表</span>
+                                <span class="material-icons-outlined text-primary opacity-0 check-icon">check</span>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -687,17 +710,10 @@
                     </div>
                     <div class="relative w-full">
                         <textarea id="calcLogicTextarea" 
-                            oninput="autoResizeTextarea(this); handleMentionTrigger(this)" 
+                            oninput="autoResizeTextarea(this)" 
                             class="w-full min-h-[128px] px-3 py-2 bg-white dark:bg-gray-800 border border-border-light dark:border-border-dark rounded focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm resize-none placeholder-gray-400 text-text-primary-light dark:text-text-primary-dark font-mono overflow-hidden" 
-                            placeholder="请在此清晰描述计算需求，推荐输入公式进行描述。描述的过程中需要引用上述参数或表格时，可以使用”@”"></textarea>
+                            placeholder="请在此清晰描述计算需求，推荐输入公式进行描述。描述参数或表格时，请使用完整名称"></textarea>
                         <span class="absolute right-3 bottom-2 text-xs text-text-secondary-light dark:text-text-secondary-dark pointer-events-none">0 / 2000</span>
-                        
-                        <!-- Dropdown Menu (Hidden initially) -->
-                        <div id="mentionDropdown" class="hidden absolute left-0 z-50 w-56 bg-white dark:bg-gray-800 rounded-md shadow-dropdown border border-border-light dark:border-border-dark overflow-hidden animate-fade-in-up">
-                            <div class="py-1" id="mentionDropdownList">
-                                <!-- Dynamic items will be injected here -->
-                            </div>
-                        </div>
                     </div>
                 </section>
             </div>
@@ -984,125 +1000,104 @@
             });
         });
 
-        // --- New Logic for Textarea Auto-resize and Mention Trigger ---
+        // --- New Logic for Textarea Auto-resize ---
 
         function autoResizeTextarea(element) {
             element.style.height = 'auto';
             element.style.height = (element.scrollHeight) + 'px';
         }
 
-        function handleMentionTrigger(element) {
-            const cursorPosition = element.selectionStart;
-            const text = element.value;
-            const lastChar = text.substring(cursorPosition - 1, cursorPosition);
-            const dropdown = document.getElementById('mentionDropdown');
+        // --- New Logic for Multi-Select Component ---
+        
+        // Store selected values (Set stores unique IDs)
+        let selectedOptions = new Set();
+        
+        // Data map for display text
+        const optionMap = {
+            '1': '2025春季面料价格表',
+            '2': '通用辅料价格表',
+            '3': '2024冬季尾货清单',
+            '4': 'VIP客户折扣表'
+        };
 
-            if (lastChar === '@') {
-                // Trigger dropdown
-                showMentionDropdown(element);
+        function toggleMultiSelect() {
+            const options = document.getElementById('multiSelectOptions');
+            options.classList.toggle('hidden');
+            
+            // Close dropdown when clicking outside
+            if (!options.classList.contains('hidden')) {
+                document.addEventListener('click', closeMultiSelectOnClickOutside);
             } else {
-                // Simple hide logic: if user types space or deletes @
-                // Ideally, we'd track if we are currently "in" a mention state
-                // For this demo, clicking outside or typing space hides it.
-                // We'll hide it on any other input for simplicity unless we are filtering.
-                // Let's keep it simple: Show only immediately after typing @
-                // dropdown.classList.add('hidden');
+                document.removeEventListener('click', closeMultiSelectOnClickOutside);
             }
         }
 
-        function showMentionDropdown(textarea) {
-            const dropdown = document.getElementById('mentionDropdown');
-            const list = document.getElementById('mentionDropdownList');
-            list.innerHTML = ''; // Clear previous
+        function closeMultiSelectOnClickOutside(event) {
+            const container = document.getElementById('customMultiSelect');
+            if (!container.contains(event.target)) {
+                document.getElementById('multiSelectOptions').classList.add('hidden');
+                document.removeEventListener('click', closeMultiSelectOnClickOutside);
+            }
+        }
 
-            // 1. Collect Data
-            const data = collectMentionData();
-
-            if (data.length === 0) {
-                 const emptyItem = document.createElement('div');
-                 emptyItem.className = "px-4 py-2 text-xs text-text-secondary-light dark:text-text-secondary-dark";
-                 emptyItem.innerText = "无可用字段";
-                 list.appendChild(emptyItem);
+        function toggleOption(element, value, label) {
+            const checkIcon = element.querySelector('.check-icon');
+            
+            if (selectedOptions.has(value)) {
+                selectedOptions.delete(value);
+                checkIcon.classList.add('opacity-0');
+                element.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
             } else {
-                data.forEach(item => {
-                    const el = document.createElement('div');
-                    el.className = "px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex justify-between items-center group";
-                    el.onclick = () => insertMention(item.name);
-                    
-                    const nameSpan = document.createElement('span');
-                    nameSpan.className = "text-sm text-text-primary-light dark:text-text-primary-dark font-medium";
-                    nameSpan.innerText = item.name;
+                selectedOptions.add(value);
+                checkIcon.classList.remove('opacity-0');
+                element.classList.add('bg-blue-50', 'dark:bg-blue-900/20');
+            }
+            
+            // Prevent event bubbling so dropdown doesn't close immediately (optional preference)
+             if(window.event) window.event.stopPropagation();
 
-                    const sourceSpan = document.createElement('span');
-                    sourceSpan.className = "text-xs text-text-secondary-light dark:text-text-secondary-dark bg-gray-50 dark:bg-gray-600 px-1.5 py-0.5 rounded";
-                    sourceSpan.innerText = item.source;
+            renderSelectedTags();
+        }
 
-                    el.appendChild(nameSpan);
-                    el.appendChild(sourceSpan);
-                    list.appendChild(el);
+        function removeTag(value) {
+            selectedOptions.delete(value);
+            
+            // Update UI in dropdown list to reflect removal
+            const options = document.querySelectorAll('#multiSelectOptions .group\\/option');
+            options.forEach(opt => {
+                // This is a simple way to find the element, in production use data attributes
+                if (opt.onclick.toString().includes(`'${value}'`)) {
+                    opt.querySelector('.check-icon').classList.add('opacity-0');
+                    opt.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
+                }
+            });
+            
+            renderSelectedTags();
+            // Stop propagation to prevent opening dropdown when clicking X
+             if(window.event) window.event.stopPropagation();
+        }
+
+        function renderSelectedTags() {
+            const container = document.getElementById('selectedTags');
+            const placeholder = document.getElementById('multiSelectPlaceholder');
+            
+            container.innerHTML = '';
+            
+            if (selectedOptions.size === 0) {
+                placeholder.classList.remove('hidden');
+            } else {
+                placeholder.classList.add('hidden');
+                
+                selectedOptions.forEach(value => {
+                    const tag = document.createElement('div');
+                    tag.className = 'flex items-center gap-1 px-2 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-primary rounded text-xs border border-blue-200 dark:border-blue-800/50';
+                    tag.innerHTML = `
+                        <span>${optionMap[value]}</span>
+                        <span onclick="removeTag('${value}')" class="material-icons-outlined text-sm cursor-pointer hover:text-blue-800 dark:hover:text-blue-300">close</span>
+                    `;
+                    container.appendChild(tag);
                 });
             }
-
-            // 2. Position Dropdown (Simplified relative positioning)
-            // In a real app, we'd calculate exact caret coordinates. 
-            // Here we'll position it nicely within the container.
-            dropdown.style.top = '40px'; // Approx below first line
-            dropdown.style.left = '10px';
-            dropdown.classList.remove('hidden');
-            
-            // Auto hide on click outside is handled generally, but let's add a specific listener
-            document.addEventListener('click', function hide(e) {
-                if (!dropdown.contains(e.target) && e.target !== textarea) {
-                    dropdown.classList.add('hidden');
-                    document.removeEventListener('click', hide);
-                }
-            });
-        }
-
-        function collectMentionData() {
-            const items = [];
-            
-            // Input Params
-            document.querySelectorAll('#inputParamsList input[readonly]').forEach((input, index) => {
-                // Every 3rd input is a name in the current grid structure (name, type, unit)
-                // But better to select by logic. Our grid structure is consistent.
-                // The structure is: paramName (readonly), type (readonly), unit (readonly)
-                // Let's rely on the value not being empty and being in the first col div
-                if (input.closest('.md\\:col-span-4')) {
-                      items.push({ name: input.value, source: '来自参数' });
-                }
-            });
-
-            // Price Table Fields (Parsed Headers)
-            // Removed as requested to only show params
-
-            return items;
-        }
-
-        function insertMention(text) {
-            const textarea = document.getElementById('calcLogicTextarea');
-            const cursorPosition = textarea.selectionStart;
-            const currentValue = textarea.value;
-
-            // Remove the '@' that triggered it if we want to replace it, 
-            // OR just append. Usually we want "ParamName" after "@".
-            // Let's assume we keep the @ and just add the name.
-            // Or better: replace the trigger behavior is usually "User types @, list shows, user selects 'Name', result is '@Name ' "
-            
-            const before = currentValue.substring(0, cursorPosition);
-            const after = currentValue.substring(cursorPosition);
-            
-            // Check if we need to insert a space?
-            const newValue = before + text + " " + after;
-            
-            textarea.value = newValue;
-            textarea.focus();
-            
-            // Move cursor
-            const newCursorPos = cursorPosition + text.length + 1;
-            textarea.setSelectionRange(newCursorPos, newCursorPos);
-
-            document.getElementById('mentionDropdown').classList.add('hidden');
         }
 
     </script>
